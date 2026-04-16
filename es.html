@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Actividad 2 — Simulador Dinámico del Banco Central</title>
+<title>Simulador Dinámico del Banco Central</title>
 
 <style>
 :root {
@@ -24,35 +24,36 @@ body{
   background:var(--bg);
   margin:0;
   padding:20px;
+  color:var(--text);
 }
 
-.container{max-width:1000px;margin:auto;}
+.container{max-width:1100px;margin:auto;}
 
 header{
   background:var(--primary);
   color:white;
-  padding:28px;
+  padding:26px;
   border-radius:12px;
   margin-bottom:20px;
 }
 
 .intro{
   background:white;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:20px;
+  padding:18px;
   border-left:4px solid var(--accent);
+  border-radius:8px;
+  margin-bottom:20px;
 }
 
 .grid{
   display:grid;
-  grid-template-columns:1fr;
+  grid-template-columns:1fr 1fr;
   gap:20px;
 }
 
 .panel{
   background:white;
-  padding:20px;
+  padding:18px;
   border-radius:10px;
   border:1px solid var(--border);
 }
@@ -60,8 +61,8 @@ header{
 .state-row{
   display:flex;
   justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px dashed #eaeef3;
+  padding:8px 0;
+  border-bottom:1px dashed #eee;
 }
 
 .state-value.high{color:var(--accent);}
@@ -71,7 +72,7 @@ header{
 .decision-panel{
   background:#fff8e1;
   border:2px solid var(--warning);
-  padding:20px;
+  padding:18px;
   border-radius:10px;
   margin:20px 0;
 }
@@ -79,29 +80,32 @@ header{
 button.primary{
   background:var(--primary);
   color:white;
-  padding:10px 20px;
+  padding:10px 24px;
   border:none;
   border-radius:8px;
   cursor:pointer;
 }
 
-.chart-container, .log{
+.chart-container{
   background:white;
-  padding:20px;
+  padding:18px;
   border-radius:10px;
   border:1px solid var(--border);
-  margin-bottom:20px;
 }
 
-.final-panel{
-  display:none;
-  background:#1e3a5f;
-  color:white;
-  padding:20px;
+#chart{
+  width:100%;
+  height:340px;
+}
+
+.log{
+  background:white;
+  padding:18px;
   border-radius:10px;
+  border:1px solid var(--border);
+  max-height:260px;
+  overflow:auto;
 }
-
-.final-panel.show{display:block;}
 </style>
 </head>
 
@@ -110,18 +114,19 @@ button.primary{
 <div class="container">
 
 <header>
-<h1>🏛️ Simulador Dinámico del Banco Central</h1>
-<p>Eres el Gobernador. Tomas decisiones de tasa y observas la economía.</p>
+  <h1>🏛️ Simulador del Banco Central</h1>
+  <p>Define la tasa de interés cada trimestre. La economía reaccionará a tus decisiones.</p>
 </header>
 
 <div class="intro">
-<p><strong>Contexto:</strong> Banco central de Andina. Meta inflación 3%, r* = 2%.</p>
-<p>Cada trimestre decides la tasa de interés observando inflación y brecha.</p>
+<strong>Contexto:</strong> Diriges el banco central de una economía emergente con meta de inflación del 3%.  
+Tu objetivo es estabilizar la inflación y el producto bajo shocks macroeconómicos.
 </div>
 
 <div class="grid">
+
 <div class="panel">
-<h3>Estado actual — Trimestre <span id="quarter">1</span>/8</h3>
+<h3>📊 Estado actual — T<span id="quarter">1</span></h3>
 
 <div class="state-row">
 <span>Inflación</span>
@@ -129,109 +134,115 @@ button.primary{
 </div>
 
 <div class="state-row">
-<span>Brecha producto</span>
+<span>Brecha del producto</span>
 <span id="gap-now"></span>
 </div>
 
 <div class="state-row">
-<span>Tasa previa</span>
+<span>Tasa anterior</span>
 <span id="prev-rate"></span>
 </div>
 
-<div id="context-note"></div>
-</div>
 </div>
 
+</div>
+
+<!-- 🔥 IMPROVED DECISION PANEL -->
 <div class="decision-panel">
-<h3>Tu decisión</h3>
-<input type="number" id="rate-input" placeholder="5.50">
-<button class="primary" id="submit-rate">Fijar tasa</button>
+
+<h3>⚖️ Decisión de política monetaria</h3>
+
+<p style="font-size:0.9rem;">
+Evalúa la situación macroeconómica y define la tasa de interés.  
+Considera cómo tus decisiones afectan la inflación y la actividad económica en el tiempo.
+</p>
+
+<ul style="font-size:0.85rem;color:var(--muted);">
+<li>Inflación alta → presión contractiva</li>
+<li>Recesión → política expansiva</li>
+<li>Los efectos ocurren con rezagos</li>
+</ul>
+
+<input type="number" id="rate-input" placeholder="Ej: 5.5">
+
+<button class="primary" id="submit-rate">Aplicar decisión →</button>
+
+<div style="font-size:0.8rem;margin-top:8px;color:var(--muted);">
+No existe una única respuesta correcta. Evalúa trade-offs.
 </div>
 
+</div>
+
+<!-- ✅ CHART PRESERVED -->
 <div class="chart-container">
-<h3>Trayectoria</h3>
-<svg id="chart" viewBox="0 0 800 300"></svg>
+<h3>📈 Evolución macroeconómica</h3>
+<svg id="chart" viewBox="0 0 800 340"></svg>
 </div>
 
 <div class="log">
-<h3>Bitácora</h3>
-<div id="log-entries"></div>
-</div>
-
-<div class="final-panel" id="final-panel">
-<h2>Resultados</h2>
-<p id="final-text"></p>
+<h3>📋 Decisiones</h3>
+<div id="log"></div>
 </div>
 
 </div>
 
 <script>
-const PI_TARGET=3;
-const R_STAR=2;
-const TOTAL=8;
+let q=0;
+let pi=4.5;
+let gap=2.0;
+let prevRate=null;
 
-let state={
-q:0,
-pi:4.5,
-gap:2,
-prev:null,
-history:[]
-};
+let history=[];
 
-function taylor(pi,gap){
-return R_STAR+pi+0.5*(pi-PI_TARGET)+0.5*gap;
+function updateUI(){
+document.getElementById("quarter").innerText=q+1;
+document.getElementById("pi-now").innerText=pi.toFixed(2)+"%";
+document.getElementById("gap-now").innerText=gap.toFixed(2)+"%";
+document.getElementById("prev-rate").innerText=prevRate?prevRate.toFixed(2)+"%":"—";
 }
 
 function evolve(rate){
-let newGap=0.7*state.gap-0.4*(rate-5);
-let newPi=0.6*state.pi+0.4*PI_TARGET+0.3*newGap;
-return {pi:newPi,gap:newGap};
+let neutral=5;
+gap=0.7*gap -0.4*(rate-neutral);
+pi=0.6*pi +0.4*3 +0.3*gap;
 }
 
-function updateUI(){
-document.getElementById("quarter").textContent=state.q+1;
-document.getElementById("pi-now").textContent=state.pi.toFixed(2)+"%";
-document.getElementById("gap-now").textContent=state.gap.toFixed(2)+"%";
-document.getElementById("prev-rate").textContent=state.prev?state.prev+"%":"—";
-}
-
-function log(text){
+function logDecision(rate){
+let log=document.getElementById("log");
 let div=document.createElement("div");
-div.textContent=text;
-document.getElementById("log-entries").prepend(div);
+div.innerHTML=`T${q+1}: tasa ${rate}%`;
+log.prepend(div);
 }
 
-function submit(){
-let val=parseFloat(document.getElementById("rate-input").value);
-if(isNaN(val))return;
+function drawChart(){
+let svg=document.getElementById("chart");
+let html="";
 
-let t=taylor(state.pi,state.gap);
+history.forEach((h,i)=>{
+let x=80*i;
+let y=300 - h.pi*20;
+html+=`<circle cx="${x}" cy="${y}" r="4" fill="red"/>`;
+});
 
-let next=evolve(val);
-
-log("T"+(state.q+1)+" | Tu tasa:"+val+" | Taylor:"+t.toFixed(2));
-
-state.history.push(val);
-
-state.pi=next.pi;
-state.gap=next.gap;
-state.prev=val;
-state.q++;
-
-if(state.q>=TOTAL){
-finish();
-return;
+svg.innerHTML=html;
 }
+
+document.getElementById("submit-rate").onclick=()=>{
+let rate=parseFloat(document.getElementById("rate-input").value);
+if(isNaN(rate))return;
+
+prevRate=rate;
+evolve(rate);
+
+history.push({pi,gap});
+
+logDecision(rate);
+drawChart();
+
+q++;
 
 updateUI();
-}
-
-function finish(){
-document.getElementById("final-panel").classList.add("show");
-document.getElementById("final-text").textContent="Simulación completada.";
-}
-
-document.getElementById("submit-rate").onclick=submit;
+};
 
 updateUI();
 </script>
