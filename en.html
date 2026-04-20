@@ -491,10 +491,10 @@
       phase:"recovery"
     },
     {
-      q:8, pi:null, gap:null, demand_shock:0, supply_shock:0,
-      context:"Final quarter. Can you leave the economy close to equilibrium?"
-      phase:"equilibrium"
-    }
+    q:8, pi:null, gap:null, demand_shock:0, supply_shock:0,
+    context:"Final quarter. Can you leave the economy close to equilibrium?",
+    phase:"equilibrium"
+  }
   ];
 
   var state = {
@@ -552,7 +552,7 @@
     gapEl.className = "state-value " + classifyGap(state.gap);
 
     document.getElementById('prev-rate').textContent =
-      state.prevRate !== null ? fmt(state.prevRate, "%") : "— (primer trimestre)";
+      state.prevRate !== null ? fmt(state.prevRate, "%") : "— (first quarter)";
 
     document.getElementById('context-note').innerHTML =
       "<strong>Situación:</strong> " + sc.context;
@@ -660,7 +660,7 @@
     var verdictIcon = entry.correct ? '✅' : (entry.partial ? '⚠️' : '❌');
 
     div.innerHTML =
-      '<strong>Trimestre ' + entry.q + '</strong> — ' + verdictIcon + ' ' +
+      '<strong>Quarter ' + entry.q + '</strong> — ' + verdictIcon + ' ' +
       'Tu tasa: <strong>' + entry.userRate.toFixed(2) + '%</strong> · ' +
       'Taylor sugería: <strong>' + entry.taylorRate.toFixed(2) + '%</strong><br>' +
       '<span style="font-size:0.85rem; color:#555;">' + entry.comment + '</span>';
